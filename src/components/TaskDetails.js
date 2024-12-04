@@ -1,88 +1,139 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import TopNav from "../Utils/TopNav";
-import PageNotFound from "./PageNotFound";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 const TaskDetails = () => {
-  const { id } = useParams();
-  const items = JSON.parse(localStorage.getItem("todoItems"));
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { id } = route.params;
+  
+  const [details, setDetails] = React.useState(null);
 
-  const details = items.find((val) => val.id.toString() === id);
+  React.useEffect(() => {
+    const loadDetails = async () => {
+      const items = await AsyncStorage.getItem('todoItems');
+      if (items) {
+        const parsedItems = JSON.parse(items);
+        const taskDetails = parsedItems.find(val => val.id.toString() === id);
+        setDetails(taskDetails);
+      }
+    };
+    loadDetails();
+  }, [id]);
 
-  if(!details){
-    return <PageNotFound />
+  if (!details) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Task not found</Text>
+      </View>
+    );
   }
 
   return (
-    <div className=" w-full relative min-h-screen bg-purple-600">
-      <div className=" max-w-[1300px] px-10 max-md:px-5 m-auto">
-        <div>
-          <TopNav title={"Task Details"} />
+    <ScrollView style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Task Details</Text>
 
-          <div className=" rounded-2xl bg-purple-700 max-w-[600px] m-auto mt-16 py-10 px-8 max-sm:p-5 text-white">
-            <h1 className=" text-center text-4xl max-sm:text-2xl font-bold">
-              Task
-            </h1>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Task Name:</Text>
+          <Text style={styles.value}>{details.title}</Text>
+        </View>
 
-            <div className=" mt-8">
-              <div className="max-sm:text-base font-semibold flex gap-4 items-center border-b pt-4 pb-3">
-                <h2 className="text-left text-lg max-sm:text-sm min-w-28">
-                  Task Name:
-                </h2>
-                <p className=" text-left text-base max-sm:text-sm font-normal">
-                  {details.title}
-                </p>
-              </div>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Description:</Text>
+          <Text style={styles.value}>
+            {details.description ? details.description : '-'}
+          </Text>
+        </View>
 
-              <div className="max-sm:text-base font-semibold flex gap-4 items-center border-b pt-4 pb-3">
-                <h2 className="text-left text-lg max-sm:text-sm min-w-28">
-                  Description:
-                </h2>
-                <p className="text-left text-base max-sm:text-sm font-normal">
-                  {details.description ? details.description : "-"}
-                </p>
-              </div>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Created:</Text>
+          <Text style={styles.value}>{details.currentTime}</Text>
+        </View>
 
-              <div className="text-xl max-sm:text-base font-semibold flex gap-4 items-center border-b pt-4 pb-3">
-                <h2 className=" text-left text-lg max-sm:text-sm min-w-28">
-                  Created:
-                </h2>
-                <p className="text-left text-base max-sm:text-sm font-normal">
-                  {details.currentTime}
-                </p>
-              </div>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Complete:</Text>
+          <Text style={styles.value}>
+            {details.check ? 'Completed' : 'Not completed'}
+          </Text>
+        </View>
 
-              <div className="max-sm:text-base font-semibold flex gap-4 items-center border-b pt-4 pb-3">
-                <h2 className="text-left text-lg max-sm:text-sm min-w-28">
-                  Complete:
-                </h2>
-                <p className=" text-left text-base max-sm:text-sm font-normal">
-                  {details.check ? "Completed" : "Not completed"}
-                </p>
-              </div>
-
-              <div className="max-sm:text-base font-semibold flex gap-4 items-center pt-4 pb-3">
-                <h2 className="text-left text-lg max-sm:text-sm min-w-28">
-                  Catagory:
-                </h2>
-
-                <div className="flex flex-wrap gap-3 max-sm:gap-2">
-                  {details.catagory.map((val, index) => (
-                    <p
-                      className="text-left text-base bg-purple-600 border-purple-300 border-2 flex items-center gap-1 font-medium rounded-2xl px-3 py-1 max-sm:text-xs max-sm:py-0"
-                      key={index}
-                    >
-                       <span className=" text-xl max-sm:text-lg">{val.emoji}</span> {val.catagory}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Category:</Text>
+          <View style={styles.categoryContainer}>
+            {details.catagory.map((val, index) => (
+              <View key={index} style={styles.category}>
+                <Text style={styles.categoryText}>
+                  {val.emoji} {val.catagory}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#7C3AED',
+  },
+  card: {
+    backgroundColor: '#8B5CF6',
+    margin: 20,
+    padding: 20,
+    borderRadius: 15,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  detailRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.2)',
+    paddingVertical: 15,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 5,
+  },
+  value: {
+    fontSize: 14,
+    color: '#fff',
+    opacity: 0.9,
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 5,
+  },
+  category: {
+    backgroundColor: '#7C3AED',
+    borderWidth: 1,
+    borderColor: '#9CA3AF',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    margin: 4,
+  },
+  categoryText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  errorText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+});
 
 export default TaskDetails;
