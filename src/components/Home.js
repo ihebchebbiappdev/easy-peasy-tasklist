@@ -16,7 +16,7 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>My Tasks</Text>
+        <Text style={styles.greeting}>My fucking Tasks</Text>
         <Text style={styles.date}>{new Date().toLocaleDateString()}</Text>
       </View>
       
