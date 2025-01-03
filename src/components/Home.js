@@ -42,11 +42,11 @@ const Home = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.85, // Reduced from 1 to 0.85 (15% less)
     backgroundColor: '#EDE9FE',
   },
   header: {
-    padding: 20,
+    padding: 17, // Reduced from 20
     backgroundColor: '#7C3AED',
   },
   greeting: {
@@ -56,15 +56,15 @@ const styles = StyleSheet.create({
   },
   date: {
     color: '#fff',
-    marginTop: 5,
+    marginTop: 4, // Reduced from 5
   },
   addButton: {
     position: 'absolute',
-    bottom: 30,
-    right: 30,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    bottom: 25, // Reduced from 30
+    right: 25, // Reduced from 30
+    width: 51, // Reduced from 60
+    height: 51, // Reduced from 60
+    borderRadius: 26, // Reduced from 30
     backgroundColor: '#7C3AED',
     justifyContent: 'center',
     alignItems: 'center',
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   addButtonText: {
-    fontSize: 30,
+    fontSize: 26, // Reduced from 30
     color: '#fff',
   },
 });
